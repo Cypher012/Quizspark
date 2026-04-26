@@ -1,0 +1,26 @@
+{
+  "name": "api",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:generate": "drizzle-kit generate",
+    "db:local": "wrangler d1 migrations apply quizspark --local",
+    "db:remote": "wrangler d1 migrations apply quizspark --remote",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "better-auth": "^1.6.9",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.15",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "wrangler": "^4.4.0"
+  }
+}
