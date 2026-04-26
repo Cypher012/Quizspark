@@ -1,7 +1,6 @@
 import { Button } from "#/components/ui/button"
-import { Card, CardContent } from "#/components/ui/card"
-import { Link } from "@tanstack/react-router"
 import { authClient } from "#/lib/auth-client"
+import { env } from "#/env"
 
 function GoogleIcon() {
   return (
@@ -26,14 +25,14 @@ export function AuthSignIn() {
   const handleGoogleSignIn = () => {
     authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard",
+      callbackURL: env.VITE_FRONTEND_URL,
     })
   }
 
   const handleGithubSignIn = () => {
     authClient.signIn.social({
       provider: "github",
-      callbackURL: "/dashboard",
+      callbackURL: env.VITE_FRONTEND_URL,
     })
   }
 
@@ -51,7 +50,7 @@ export function AuthSignIn() {
             <div className="space-y-1">
               <h1 className="text-2xl font-semibold">Welcome back</h1>
               <p className="text-sm text-muted-foreground">
-                Sign in to continue to your dashboard
+                Sign in to continue to QuizSpark
               </p>
             </div>
           </div>

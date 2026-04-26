@@ -41,6 +41,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: RootNotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -69,5 +70,21 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function RootNotFound() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-6 text-foreground">
+      <div className="w-full max-w-md rounded-2xl border bg-card p-8 text-center shadow-sm">
+        <p className="text-sm font-medium uppercase tracking-[0.24em] text-muted-foreground">
+          QuizSpark
+        </p>
+        <h1 className="mt-4 text-2xl font-semibold">Page not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          The page you requested does not exist or is no longer available.
+        </p>
+      </div>
+    </div>
   )
 }

@@ -9,86 +9,93 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthIndexRouteImport } from './routes/auth/index'
-import { Route as SettingsPathRouteImport } from './routes/settings/$path'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
+import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
 
-const IndexRoute = IndexRouteImport.update({
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthIndexRoute = AuthIndexRouteImport.update({
-  id: '/auth/',
-  path: '/auth/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SettingsPathRoute = SettingsPathRouteImport.update({
-  id: '/settings/$path',
-  path: '/settings/$path',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ProtectedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/settings/$path': typeof SettingsPathRoute
-  '/auth/': typeof AuthIndexRoute
+  '/': typeof ProtectedIndexRoute
+  '/auth': typeof AuthRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/settings/$path': typeof SettingsPathRoute
-  '/auth': typeof AuthIndexRoute
+  '/auth': typeof AuthRoute
+  '/': typeof ProtectedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/settings/$path': typeof SettingsPathRoute
-  '/auth/': typeof AuthIndexRoute
+  '/_protected': typeof ProtectedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_protected/': typeof ProtectedIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/settings/$path' | '/auth/'
+  fullPaths: '/' | '/auth'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/settings/$path' | '/auth'
-  id: '__root__' | '/' | '/settings/$path' | '/auth/'
+  to: '/auth' | '/'
+  id: '__root__' | '/_protected' | '/auth' | '/_protected/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  SettingsPathRoute: typeof SettingsPathRoute
-  AuthIndexRoute: typeof AuthIndexRoute
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/': {
+      id: '/_protected/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/': {
-      id: '/auth/'
-      path: '/auth'
-      fullPath: '/auth/'
-      preLoaderRoute: typeof AuthIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/settings/$path': {
-      id: '/settings/$path'
-      path: '/settings/$path'
-      fullPath: '/settings/$path'
-      preLoaderRoute: typeof SettingsPathRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ProtectedIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
     }
   }
 }
 
+interface ProtectedRouteRouteChildren {
+  ProtectedIndexRoute: typeof ProtectedIndexRoute
+}
+
+const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedIndexRoute: ProtectedIndexRoute,
+}
+
+const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
+  ProtectedRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  SettingsPathRoute: SettingsPathRoute,
-  AuthIndexRoute: AuthIndexRoute,
+  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
