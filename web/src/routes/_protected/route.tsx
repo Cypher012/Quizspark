@@ -1,19 +1,23 @@
-import { useEffect, useState } from "react"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { useEffect, useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
-import { Skeleton } from "#/components/ui/skeleton"
-import { authClient } from "#/lib/auth-client"
-import { DashboardLayout } from "#/components/web/layout"
+import { Skeleton } from '#/components/ui/skeleton'
+import { authClient } from '#/lib/auth-client'
+import { AuthProvider } from '#/features/auth/auth-context'
+import { DashboardLayout } from '#/features/layout/components/layout'
+import type { DashboardLayoutUserProps } from '#/features/layout/components/types'
 
-export const Route = createFileRoute("/_protected")({
+export const Route = createFileRoute('/_protected')({
   component: ProtectedLayout,
 })
 
-type SessionData = Awaited<ReturnType<typeof authClient.getSession>>["data"]
+type SessionData = typeof authClient.$Infer.Session
 
 function ProtectedLayout() {
   const navigate = useNavigate()
-  const [session, setSession] = useState<SessionData | undefined>(undefined)
+  const [session, setSession] = useState<SessionData | null | undefined>(
+    undefined,
+  )
 
   useEffect(() => {
     let isMounted = true
@@ -26,7 +30,7 @@ function ProtectedLayout() {
       }
 
       if (!data) {
-        await navigate({ to: "/auth", replace: true })
+        await navigate({ to: '/auth', replace: true })
         return
       }
 
@@ -40,49 +44,41 @@ function ProtectedLayout() {
     }
   }, [navigate])
 
-  if (!session) {
-    return <ProtectedLayoutSkeleton />
+  if (session === undefined) return <LoadingScreen />
+  if (session === null) return null
+
+  const user: DashboardLayoutUserProps = {
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image,
   }
 
   return (
-    <DashboardLayout
-      userName={session.user.name}
-      userEmail={session.user.email}
-      userImage={session.user.image}
-    />
+    <AuthProvider
+      value={{
+        isAdmin: getIsAdmin(session.user),
+      }}
+    >
+      <DashboardLayout user={user} />
+    </AuthProvider>
   )
 }
 
-function ProtectedLayoutSkeleton() {
+function LoadingScreen() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <aside className="fixed inset-y-0 left-0 z-30 flex w-[240px] flex-col border-r bg-sidebar px-4 py-6">
-        <Skeleton className="h-14 w-full rounded-2xl" />
-        <div className="mt-6 space-y-3">
-          <Skeleton className="h-11 w-full rounded-xl" />
-          <Skeleton className="h-11 w-full rounded-xl" />
-          <Skeleton className="h-11 w-full rounded-xl" />
-          <Skeleton className="h-11 w-full rounded-xl" />
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+          <span className="text-sm font-semibold tracking-[0.2em]">QS</span>
         </div>
-        <Skeleton className="mt-auto h-16 w-full rounded-xl" />
-      </aside>
-
-      <div className="ml-[240px] min-h-screen">
-        <div className="flex h-20 items-center justify-between border-b px-6">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-8 w-40" />
-          </div>
-          <div className="flex gap-3">
-            <Skeleton className="size-9 rounded-md" />
-            <Skeleton className="size-9 rounded-full" />
-          </div>
-        </div>
-
-        <main className="px-6 py-6">
-          <Skeleton className="h-40 w-full rounded-2xl" />
-        </main>
+        <p className="text-sm text-muted-foreground animate-pulse">
+          Loading...
+        </p>
       </div>
     </div>
   )
+}
+
+function getIsAdmin(user: SessionData['user']) {
+  return 'role' in user && user.role === 'admin'
 }

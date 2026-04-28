@@ -12,6 +12,7 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
+import { Toaster } from '#/components/ui/sonner'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -53,7 +54,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            {children}
+          {children}
+          <Toaster richColors closeButton />
         </ThemeProvider>
         <TanStackDevtools
           config={{

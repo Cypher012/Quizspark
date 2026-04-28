@@ -1,0 +1,1 @@
+ALTER TABLE `topics` RENAME COLUMN "content" TO "note";

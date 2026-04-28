@@ -12,6 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as ProtectedIndexRouteImport } from './routes/_protected/index'
+import { Route as ProtectedCoursesRouteImport } from './routes/_protected/courses'
+import { Route as ProtectedTopicsRouteRouteImport } from './routes/_protected/topics/route'
+import { Route as ProtectedTopicsIndexRouteImport } from './routes/_protected/topics/index'
+import { Route as ProtectedTopicsTopicIdRouteImport } from './routes/_protected/topics/$topicId'
+import { Route as ProtectedCoursesCourseIdRouteImport } from './routes/_protected/courses.$courseId'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -27,27 +32,89 @@ const ProtectedIndexRoute = ProtectedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ProtectedRouteRoute,
 } as any)
+const ProtectedCoursesRoute = ProtectedCoursesRouteImport.update({
+  id: '/courses',
+  path: '/courses',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedTopicsRouteRoute = ProtectedTopicsRouteRouteImport.update({
+  id: '/topics',
+  path: '/topics',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const ProtectedTopicsIndexRoute = ProtectedTopicsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProtectedTopicsRouteRoute,
+} as any)
+const ProtectedTopicsTopicIdRoute = ProtectedTopicsTopicIdRouteImport.update({
+  id: '/$topicId',
+  path: '/$topicId',
+  getParentRoute: () => ProtectedTopicsRouteRoute,
+} as any)
+const ProtectedCoursesCourseIdRoute =
+  ProtectedCoursesCourseIdRouteImport.update({
+    id: '/$courseId',
+    path: '/$courseId',
+    getParentRoute: () => ProtectedCoursesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof ProtectedIndexRoute
   '/auth': typeof AuthRoute
+  '/topics': typeof ProtectedTopicsRouteRouteWithChildren
+  '/courses': typeof ProtectedCoursesRouteWithChildren
+  '/courses/$courseId': typeof ProtectedCoursesCourseIdRoute
+  '/topics/$topicId': typeof ProtectedTopicsTopicIdRoute
+  '/topics/': typeof ProtectedTopicsIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/courses': typeof ProtectedCoursesRouteWithChildren
   '/': typeof ProtectedIndexRoute
+  '/courses/$courseId': typeof ProtectedCoursesCourseIdRoute
+  '/topics/$topicId': typeof ProtectedTopicsTopicIdRoute
+  '/topics': typeof ProtectedTopicsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_protected/topics': typeof ProtectedTopicsRouteRouteWithChildren
+  '/_protected/courses': typeof ProtectedCoursesRouteWithChildren
   '/_protected/': typeof ProtectedIndexRoute
+  '/_protected/courses/$courseId': typeof ProtectedCoursesCourseIdRoute
+  '/_protected/topics/$topicId': typeof ProtectedTopicsTopicIdRoute
+  '/_protected/topics/': typeof ProtectedTopicsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/topics'
+    | '/courses'
+    | '/courses/$courseId'
+    | '/topics/$topicId'
+    | '/topics/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/'
-  id: '__root__' | '/_protected' | '/auth' | '/_protected/'
+  to:
+    | '/auth'
+    | '/courses'
+    | '/'
+    | '/courses/$courseId'
+    | '/topics/$topicId'
+    | '/topics'
+  id:
+    | '__root__'
+    | '/_protected'
+    | '/auth'
+    | '/_protected/topics'
+    | '/_protected/courses'
+    | '/_protected/'
+    | '/_protected/courses/$courseId'
+    | '/_protected/topics/$topicId'
+    | '/_protected/topics/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,14 +145,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedIndexRouteImport
       parentRoute: typeof ProtectedRouteRoute
     }
+    '/_protected/courses': {
+      id: '/_protected/courses'
+      path: '/courses'
+      fullPath: '/courses'
+      preLoaderRoute: typeof ProtectedCoursesRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/topics': {
+      id: '/_protected/topics'
+      path: '/topics'
+      fullPath: '/topics'
+      preLoaderRoute: typeof ProtectedTopicsRouteRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/_protected/topics/': {
+      id: '/_protected/topics/'
+      path: '/'
+      fullPath: '/topics/'
+      preLoaderRoute: typeof ProtectedTopicsIndexRouteImport
+      parentRoute: typeof ProtectedTopicsRouteRoute
+    }
+    '/_protected/topics/$topicId': {
+      id: '/_protected/topics/$topicId'
+      path: '/$topicId'
+      fullPath: '/topics/$topicId'
+      preLoaderRoute: typeof ProtectedTopicsTopicIdRouteImport
+      parentRoute: typeof ProtectedTopicsRouteRoute
+    }
+    '/_protected/courses/$courseId': {
+      id: '/_protected/courses/$courseId'
+      path: '/$courseId'
+      fullPath: '/courses/$courseId'
+      preLoaderRoute: typeof ProtectedCoursesCourseIdRouteImport
+      parentRoute: typeof ProtectedCoursesRoute
+    }
   }
 }
 
+interface ProtectedTopicsRouteRouteChildren {
+  ProtectedTopicsTopicIdRoute: typeof ProtectedTopicsTopicIdRoute
+  ProtectedTopicsIndexRoute: typeof ProtectedTopicsIndexRoute
+}
+
+const ProtectedTopicsRouteRouteChildren: ProtectedTopicsRouteRouteChildren = {
+  ProtectedTopicsTopicIdRoute: ProtectedTopicsTopicIdRoute,
+  ProtectedTopicsIndexRoute: ProtectedTopicsIndexRoute,
+}
+
+const ProtectedTopicsRouteRouteWithChildren =
+  ProtectedTopicsRouteRoute._addFileChildren(ProtectedTopicsRouteRouteChildren)
+
+interface ProtectedCoursesRouteChildren {
+  ProtectedCoursesCourseIdRoute: typeof ProtectedCoursesCourseIdRoute
+}
+
+const ProtectedCoursesRouteChildren: ProtectedCoursesRouteChildren = {
+  ProtectedCoursesCourseIdRoute: ProtectedCoursesCourseIdRoute,
+}
+
+const ProtectedCoursesRouteWithChildren =
+  ProtectedCoursesRoute._addFileChildren(ProtectedCoursesRouteChildren)
+
 interface ProtectedRouteRouteChildren {
+  ProtectedTopicsRouteRoute: typeof ProtectedTopicsRouteRouteWithChildren
+  ProtectedCoursesRoute: typeof ProtectedCoursesRouteWithChildren
   ProtectedIndexRoute: typeof ProtectedIndexRoute
 }
 
 const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedTopicsRouteRoute: ProtectedTopicsRouteRouteWithChildren,
+  ProtectedCoursesRoute: ProtectedCoursesRouteWithChildren,
   ProtectedIndexRoute: ProtectedIndexRoute,
 }
 

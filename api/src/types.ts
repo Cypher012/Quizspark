@@ -1,16 +1,9 @@
-import type { auth } from "@/utils/auth";
+import type { AuthBindings, AuthInstance } from "@/utils/auth";
 
 export type AppEnv = {
-  Bindings: {
-    DB: D1Database;
-    GOOGLE_CLIENT_ID: string;
-    GOOGLE_CLIENT_SECRET: string;
-    BETTER_AUTH_SECRET: string;
-    BETTER_AUTH_URL: string;
-    NODE_ENV: "development" | "production";
-  };
+  Bindings: AuthBindings;
   Variables: {
-    user: typeof auth.$Infer.Session.user | null;
-    session: typeof auth.$Infer.Session.session | null;
+    user: AuthInstance["$Infer"]["Session"]["user"] | null;
+    session: AuthInstance["$Infer"]["Session"]["session"] | null;
   };
 };

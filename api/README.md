@@ -7,6 +7,10 @@ npm run dev
 npm run deploy
 ```
 
+Usage flow for the three learning models:
+
+- [Course, Topic, Question Flow](./COURSE_TOPIC_QUESTION_FLOW.md)
+
 [For generating/synchronizing types based on your Worker configuration run](https://developers.cloudflare.com/workers/wrangler/commands/#types):
 
 ```txt
